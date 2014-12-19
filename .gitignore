@@ -1,0 +1,10 @@
+*.sdf
+*.ncb
+*.suo
+*.opt
+*.aps
+*.vcproj.*.*.user
+*.vcxproj.user
+vcprojects/vc120/ipch/
+bin/
+intermediate/
