@@ -134,9 +134,10 @@ void BuildCommandLine(std::wstring& result, LPCWSTR appName, LPCWSTR inCmdLine)
 
 enum class OverrideMethod
 {
-	Overwrite,
+	PreserveExisting,
 	InsertBefore,
 	InsertAfter,
+	Overwrite,
 };
 
 typedef std::pair<std::wstring, std::wstring> EnvironmentItem;
@@ -223,22 +224,19 @@ void ParseEnvironmentOverrideItem(
 	LPWSTR endOfNumber = NULL;
 	const int number = wcstol(buffer, &endOfNumber, 10);
 
-	OverrideMethod method = OverrideMethod::Overwrite;
+	OverrideMethod method = OverrideMethod::PreserveExisting;
 
 	if (endOfNumber == buffer + wcslen(buffer))
 	{
 		switch (static_cast<OverrideMethod>(number))
 		{
-		case OverrideMethod::Overwrite:
+		case OverrideMethod::PreserveExisting:
 		case OverrideMethod::InsertBefore:
 		case OverrideMethod::InsertAfter:
+		case OverrideMethod::Overwrite:
 			method = static_cast<OverrideMethod>(number);
 			break;
 		}
-	}
-	else if (_wcsicmp(buffer, L"Overwrite") == 0)
-	{
-		method = OverrideMethod::Overwrite;
 	}
 	else if (_wcsicmp(buffer, L"InsertBefore") == 0)
 	{
@@ -247,6 +245,10 @@ void ParseEnvironmentOverrideItem(
 	else if (_wcsicmp(buffer, L"InsertAfter") == 0)
 	{
 		method = OverrideMethod::InsertAfter;
+	}
+	else if (_wcsicmp(buffer, L"Overwrite") == 0)
+	{
+		method = OverrideMethod::Overwrite;
 	}
 
 	destination.emplace_back(
@@ -337,7 +339,7 @@ void OverrideEnvironments(
 		{
 			(*where).second.append(value);
 		}
-		else //if (type == OverrideMethod::Overwrite)
+		else if (type == OverrideMethod::Overwrite)
 		{
 			(*where).second = value;
 		}
