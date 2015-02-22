@@ -58,14 +58,11 @@ void RemoveFirstArgument(std::wstring& result)
 		bool found = false;
 		const size_t length = result.size();
 		size_t at = 1;
+		wchar_t prevC = '\"';
 		for (; at < length; ++at)
 		{
 			const wchar_t c = result[at];
-			if (c == '\\')
-			{
-				++at;
-			}
-			else if (c == '\"')
+			if (c == '\"' && prevC != '\\')
 			{
 				found = true;
 				++at;
@@ -75,7 +72,7 @@ void RemoveFirstArgument(std::wstring& result)
 
 		if (found)
 		{
-			if (at < length)
+			if (at <= length)
 			{
 				result.erase(0, at);
 				RemoveFirstWhiteSpace(result);
@@ -190,8 +187,8 @@ void ParseEnvironmentBlock(LPCWSTR environments,
 
 #if defined(DEBUG_TRACE)
 		wprintf(L"K:\"%s\", V:\"%s\"\n",
-			result.first.c_str(),
-			result.second.c_str());
+			destination.back().first.c_str(),
+			destination.back().second.c_str());
 #endif
 	}
 }
